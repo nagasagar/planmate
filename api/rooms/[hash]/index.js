@@ -24,5 +24,17 @@ module.exports = cors(async (req, res) => {
     return res.json({ message: 'Room updated' });
   }
 
+  if (req.method === 'DELETE') {
+  const user = getUserFromRequest(req);
+  if (!user) return res.status(401).json({ detail: 'Authentication required' });
+  const sql = getSql();
+  const rooms = await sql`SELECT owner_id FROM rooms WHERE link_hash = ${hash}`;
+  if (!rooms[0]) return res.status(404).json({ detail: 'Room not found' });
+  if (rooms[0].owner_id !== user.sub)
+    return res.status(403).json({ detail: 'Only owner can delete room' });
+  await sql`DELETE FROM rooms WHERE link_hash = ${hash}`;
+  return res.json({ message: 'Room deleted' });
+}
+
   res.status(405).json({ detail: 'Method not allowed' });
 });
