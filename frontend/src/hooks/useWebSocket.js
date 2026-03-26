@@ -1,8 +1,6 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { api } from '@/lib/api';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-
 export function useWebSocket(roomHash, userId, userName, onMessage) {
   const wsRef = useRef(null);
   const reconnectRef = useRef(null);
@@ -11,13 +9,14 @@ export function useWebSocket(roomHash, userId, userName, onMessage) {
   const [usePolling, setUsePolling] = useState(false);
   const lastDataRef = useRef(null);
   const failCountRef = useRef(0);
+
   onMessageRef.current = onMessage;
 
-  // WebSocket connection
   const connect = useCallback(() => {
     if (!roomHash || !userId || !userName) return;
     try {
-      const wsUrl = BACKEND_URL.replace(/^http/, 'ws');
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}`;
       const ws = new WebSocket(
         `${wsUrl}/api/ws/${roomHash}?user_id=${encodeURIComponent(userId)}&user_name=${encodeURIComponent(userName)}`
       );
