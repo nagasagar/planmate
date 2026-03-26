@@ -3,9 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
 import { api } from '@/lib/api';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
+import { LayoutGrid, Copy, Trash2, Plus, LogOut } from 'lucide-react';
 
 export default function Dashboard() {
-  const { user, logout } = useAuth();
+  const { user, logout, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,9 +18,11 @@ export default function Dashboard() {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
+    // Wait until auth check completes before redirecting
+    if (authLoading) return;
     if (!user) { navigate('/auth'); return; }
     fetchRooms();
-  }, [user, navigate]);
+  }, [user, authLoading, navigate]);
 
   const fetchRooms = async () => {
     try {
@@ -62,70 +68,68 @@ export default function Dashboard() {
     }
   };
 
+  // Show nothing while auth is being verified
+  if (authLoading) return null;
+
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
-      {/* Header */}
-      <div className="flex items-center justify-between px-8 py-4 border-b border-gray-800">
-        <h1 className="text-2xl font-bold text-indigo-400">Planmate</h1>
+    <div className="min-h-screen bg-background">
+      {/* Header — matches AuthPage/Room style */}
+      <div className="flex items-center justify-between px-6 py-4 border-b">
+        <div className="flex items-center gap-2">
+          <LayoutGrid className="w-5 h-5 text-primary" />
+          <span className="font-bold text-lg">Planmate</span>
+        </div>
         <div className="flex items-center gap-4">
-          <span className="text-gray-400 text-sm">{user?.email}</span>
-          <button onClick={logout} className="text-sm text-gray-500 hover:text-white">Logout</button>
+          <span className="text-sm text-muted-foreground">{user?.email}</span>
+          <Button variant="ghost" size="sm" onClick={logout}>
+            <LogOut className="w-4 h-4 mr-1" /> Logout
+          </Button>
         </div>
       </div>
 
       {/* Body */}
       <div className="max-w-5xl mx-auto px-6 py-10">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-xl font-semibold">Your Rooms</h2>
-          <button
-            onClick={() => setShowModal(true)}
-            className="bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg text-sm font-medium"
-          >
-            + New Room
-          </button>
+          <h2 className="text-2xl font-semibold">Your Rooms</h2>
+          <Button onClick={() => setShowModal(true)}>
+            <Plus className="w-4 h-4 mr-1" /> New Room
+          </Button>
         </div>
 
         {loading ? (
-          <p className="text-gray-500">Loading...</p>
+          <p className="text-muted-foreground">Loading rooms...</p>
         ) : rooms.length === 0 ? (
-          <div className="text-center py-20 text-gray-500">
+          <div className="text-center py-20 text-muted-foreground">
             <p className="text-lg">No rooms yet.</p>
             <p className="text-sm mt-1">Create your first room to get started.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {rooms.map(room => (
-              <div key={room.id} className="bg-gray-900 border border-gray-800 rounded-xl p-5 flex flex-col gap-3">
-                <div>
-                  <h3 className="font-semibold text-white text-lg">{room.name || room.link_hash}</h3>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {room.story_count ?? 0} stories · {room.completed_count ?? 0} completed
-                  </p>
-                  <p className="text-xs text-gray-600 mt-1">
-                    Created {new Date(room.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-                <div className="flex gap-2 mt-auto pt-2 border-t border-gray-800">
-                  <button
-                    onClick={() => navigate(`/room/${room.link_hash}`)}
-                    className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-sm py-1.5 rounded-lg"
-                  >
-                    Open
-                  </button>
-                  <button
-                    onClick={() => handleCopyLink(room.link_hash)}
-                    className="flex-1 bg-gray-700 hover:bg-gray-600 text-sm py-1.5 rounded-lg"
-                  >
-                    Copy Link
-                  </button>
-                  <button
-                    onClick={() => handleDelete(room.link_hash)}
-                    className="bg-red-900 hover:bg-red-800 text-sm px-3 py-1.5 rounded-lg"
-                  >
-                    🗑
-                  </button>
-                </div>
-              </div>
+              <Card key={room.id} className="hover:shadow-md transition-shadow">
+                <CardContent className="p-5 flex flex-col gap-3">
+                  <div>
+                    <h3 className="font-semibold text-base">{room.name || room.link_hash}</h3>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {room.story_count ?? 0} stories · {room.completed_count ?? 0} completed
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Created {new Date(room.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="flex gap-2 mt-auto pt-3 border-t">
+                    <Button size="sm" className="flex-1" onClick={() => navigate(`/room/${room.link_hash}`)}>
+                      Open
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => handleCopyLink(room.link_hash)}>
+                      <Copy className="w-3.5 h-3.5" />
+                    </Button>
+                    <Button size="sm" variant="destructive" onClick={() => handleDelete(room.link_hash)}>
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         )}
@@ -133,28 +137,28 @@ export default function Dashboard() {
 
       {/* New Room Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-sm">
-            <h3 className="text-lg font-semibold mb-4">Create New Room</h3>
-            <input
-              type="text"
-              placeholder="Room name (e.g. Sprint 24)"
-              value={newRoomName}
-              onChange={e => setNewRoomName(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleCreate()}
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm mb-4 outline-none focus:border-indigo-500"
-            />
-            <div className="flex gap-2 justify-end">
-              <button onClick={() => setShowModal(false)} className="px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
-              <button
-                onClick={handleCreate}
-                disabled={creating}
-                className="bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg text-sm"
-              >
-                {creating ? 'Creating...' : 'Create'}
-              </button>
-            </div>
-          </div>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-sm mx-4">
+            <CardContent className="p-6">
+              <h3 className="text-lg font-semibold mb-4">Create New Room</h3>
+              <Input
+                placeholder="Room name (e.g. Sprint 24)"
+                value={newRoomName}
+                onChange={e => setNewRoomName(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleCreate()}
+                className="mb-4"
+                autoFocus
+              />
+              <div className="flex gap-2 justify-end">
+                <Button variant="ghost" onClick={() => { setShowModal(false); setNewRoomName(''); }}>
+                  Cancel
+                </Button>
+                <Button onClick={handleCreate} disabled={creating}>
+                  {creating ? 'Creating...' : 'Create'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>
