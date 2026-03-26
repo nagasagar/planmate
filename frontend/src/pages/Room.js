@@ -150,7 +150,25 @@ export default function Room() {
 
   const handleCopyLink = () => {
     const url = `${window.location.origin}/room/${linkHash}`;
-    navigator.clipboard.writeText(url).then(() => toast.success('Link copied!'));
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(url).then(() => toast.success('Link copied!')).catch(() => {
+        const textarea = document.createElement('textarea');
+        textarea.value = url;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        toast.success('Link copied!');
+      });
+    } else {
+      const textarea = document.createElement('textarea');
+      textarea.value = url;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      toast.success('Link copied!');
+    }
   };
 
   const selectedStory = stories.find(s => s.id === selectedStoryId);

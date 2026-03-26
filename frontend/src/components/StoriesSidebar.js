@@ -93,11 +93,14 @@ export default function StoriesSidebar({ stories, selectedStoryId, onSelect, isO
             <p className="text-sm text-slate-400 text-center py-8">No stories yet</p>
           )}
           {stories.map((story) => (
-            <button
+            <div
               key={story.id}
               onClick={() => onSelect(story.id)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === 'Enter' && onSelect(story.id)}
               className={cn(
-                'w-full text-left p-3 rounded-lg mb-1 transition-all group',
+                'w-full text-left p-3 rounded-lg mb-1 transition-all group cursor-pointer',
                 selectedStoryId === story.id
                   ? 'bg-blue-50 border border-blue-200'
                   : 'hover:bg-slate-50 border border-transparent'
@@ -126,7 +129,7 @@ export default function StoriesSidebar({ stories, selectedStoryId, onSelect, isO
                   </button>
                 )}
               </div>
-            </button>
+            </div>
           ))}
         </div>
       </ScrollArea>
