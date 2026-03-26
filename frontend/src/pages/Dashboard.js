@@ -16,7 +16,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (!user) { navigate('/auth'); return; }
     fetchRooms();
-  }, [user]);
+  }, [user, navigate]);
 
   const fetchRooms = async () => {
     try {
