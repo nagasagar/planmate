@@ -24,7 +24,7 @@ export default function AuthPage() {
       const res = await api.signup(signupData);
       loginUser(res.token, res.user);
       toast.success('Account created!');
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
       toast.error(err.message);
     } finally { setLoading(false); }
@@ -37,7 +37,7 @@ export default function AuthPage() {
       const res = await api.login(loginData);
       loginUser(res.token, res.user);
       toast.success('Welcome back!');
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
       toast.error(err.message);
     } finally { setLoading(false); }
