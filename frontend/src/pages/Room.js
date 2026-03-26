@@ -106,6 +106,12 @@ export default function Room() {
       case 'vote_submitted':
         setVotedSet(prev => new Set([...prev, msg.voter_id]));
         break;
+      case 'full_state':
+        if (msg.data) {
+          setRoom(msg.data);
+          setStories(msg.data.stories || []);
+        }
+        break;
       default:
         break;
     }

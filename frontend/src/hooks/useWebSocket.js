@@ -1,34 +1,70 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
+import { api } from '@/lib/api';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export function useWebSocket(roomHash, userId, userName, onMessage) {
   const wsRef = useRef(null);
   const reconnectRef = useRef(null);
+  const pollRef = useRef(null);
   const onMessageRef = useRef(onMessage);
+  const [usePolling, setUsePolling] = useState(false);
+  const lastDataRef = useRef(null);
+  const failCountRef = useRef(0);
   onMessageRef.current = onMessage;
 
+  // WebSocket connection
   const connect = useCallback(() => {
     if (!roomHash || !userId || !userName) return;
-    const wsUrl = BACKEND_URL.replace(/^http/, 'ws');
-    const ws = new WebSocket(
-      `${wsUrl}/api/ws/${roomHash}?user_id=${encodeURIComponent(userId)}&user_name=${encodeURIComponent(userName)}`
-    );
-    ws.onopen = () => {
-      console.log('WS connected');
-      if (reconnectRef.current) clearTimeout(reconnectRef.current);
-    };
-    ws.onmessage = (e) => {
-      try { onMessageRef.current(JSON.parse(e.data)); } catch {}
-    };
-    ws.onclose = () => {
-      reconnectRef.current = setTimeout(connect, 2000);
-    };
-    ws.onerror = () => ws.close();
-    wsRef.current = ws;
+    try {
+      const wsUrl = BACKEND_URL.replace(/^http/, 'ws');
+      const ws = new WebSocket(
+        `${wsUrl}/api/ws/${roomHash}?user_id=${encodeURIComponent(userId)}&user_name=${encodeURIComponent(userName)}`
+      );
+      ws.onopen = () => {
+        failCountRef.current = 0;
+        setUsePolling(false);
+        if (reconnectRef.current) clearTimeout(reconnectRef.current);
+      };
+      ws.onmessage = (e) => {
+        try { onMessageRef.current(JSON.parse(e.data)); } catch {}
+      };
+      ws.onclose = () => {
+        failCountRef.current++;
+        if (failCountRef.current >= 3) {
+          setUsePolling(true);
+        } else {
+          reconnectRef.current = setTimeout(connect, 2000);
+        }
+      };
+      ws.onerror = () => ws.close();
+      wsRef.current = ws;
+    } catch {
+      setUsePolling(true);
+    }
   }, [roomHash, userId, userName]);
 
+  // Polling fallback
   useEffect(() => {
+    if (!usePolling || !roomHash) return;
+    const poll = async () => {
+      try {
+        const data = await api.getRoom(roomHash);
+        const serialized = JSON.stringify(data);
+        if (serialized !== lastDataRef.current) {
+          lastDataRef.current = serialized;
+          onMessageRef.current({ type: 'full_state', data });
+        }
+      } catch {}
+    };
+    poll();
+    pollRef.current = setInterval(poll, 2500);
+    return () => { if (pollRef.current) clearInterval(pollRef.current); };
+  }, [usePolling, roomHash]);
+
+  // Start connection
+  useEffect(() => {
+    if (!roomHash || !userId || !userName) return;
     connect();
     const pingInterval = setInterval(() => {
       if (wsRef.current?.readyState === WebSocket.OPEN) {
@@ -39,8 +75,9 @@ export function useWebSocket(roomHash, userId, userName, onMessage) {
       clearInterval(pingInterval);
       if (wsRef.current) wsRef.current.close();
       if (reconnectRef.current) clearTimeout(reconnectRef.current);
+      if (pollRef.current) clearInterval(pollRef.current);
     };
-  }, [connect]);
+  }, [connect, roomHash, userId, userName]);
 
   return wsRef;
 }
