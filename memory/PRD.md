@@ -1,69 +1,40 @@
 # Planning Poker MVP - PRD
 
 ## Problem Statement
-Build a complete Planning Poker web app MVP. Agile estimation tool: PO creates room/stories, shares link. Team (PO + guests) uses unified /room/[linkHash] view with split pane layout. States: Ready/Voting/Completed. PO controls only.
+Planning Poker web app: PO creates room/stories, shares link. Team uses unified /room/[linkHash] view with split pane. States: Ready/Voting/Completed. PO controls only.
 
-## Architecture
-- **Frontend**: React/CRA + Tailwind CSS + Framer Motion + Shadcn UI
-- **Backend**: FastAPI (thin API proxy, equivalent to Vercel Edge Functions) + asyncpg
-- **Database**: Neon Postgres (user-provided)
-- **Auth**: JWT-based custom auth (users stored in Neon Postgres)
-- **Real-time**: WebSocket via FastAPI for live voting updates and presence
-
-## User Personas
-1. **Product Owner (PO)**: Authenticated user who creates rooms, manages stories, controls voting flow
-2. **Guest Voter**: Unauthenticated user who joins via link, enters name, and votes
-
-## Core Requirements
-- PO creates room → adds stories → starts voting → reveals → exports
-- Guests join via shared link → vote on stories → see results
-- Real-time sync via WebSocket (votes, presence, state changes)
-- Fibonacci voting: 1, 2, 3, 5, 8, 13, 21, ?, ∞, ☕
-- Story states: Ready → Voting → Completed
-- Average calculation (ignores ☕, ?, ∞)
-- CSV export of all stories + votes
+## Architecture (Vercel-Ready)
+- **Frontend**: React 19/CRA + Tailwind CSS + Framer Motion + Shadcn UI
+- **API**: Node.js serverless functions (`/api/*.js`) using `@neondatabase/serverless`
+- **Database**: Neon Postgres (direct HTTP queries)
+- **Auth**: JWT (bcryptjs + jsonwebtoken)
+- **Real-time**: WebSocket (Express/local) + polling fallback (Vercel)
+- **Deploy**: Vercel import-ready with `vercel.json`
 
 ## What's Been Implemented (March 26, 2026)
-- [x] Full backend API: auth, rooms, stories, votes, export, WebSocket
-- [x] Neon Postgres integration with table creation on startup
-- [x] JWT authentication for PO operations
-- [x] Landing page with Create Room / Join Room
-- [x] Auth page with Login / Signup tabs
-- [x] Room page with split pane (Stories sidebar + Voting area)
-- [x] Fibonacci card selection with Framer Motion animations
-- [x] Vote table with card flip animations on reveal
-- [x] Timer countdown during voting
-- [x] Presence bar showing connected participants
-- [x] CSV export
-- [x] CSV import for bulk story creation
-- [x] WebSocket real-time sync (votes, stories, presence)
-- [x] Guest flow (name entry dialog)
-- [x] Responsive design
+### Phase 1: MVP (FastAPI/Python) - Complete
+- All core features: rooms, stories, voting, export, WebSocket, auth
 
-## Testing Results
-- Backend: 100% (14/14 tests passed)
-- Frontend: 95% (minor HTML nesting warning fixed)
+### Phase 2: Vercel Port (Node.js) - Complete
+- [x] Removed all Python/FastAPI code
+- [x] Created Node.js Express server (`/app/backend/server.js`)
+- [x] Created 15 Vercel serverless function files (`/app/api/`)
+- [x] Shared modules: db.js (@neondatabase/serverless), auth.js, cors.js
+- [x] WebSocket (Express) + polling fallback (Vercel)
+- [x] vercel.json, package.json, DEPLOY.md
+- [x] Frontend unchanged (same API contract)
+
+## Testing Results (Phase 2)
+- Backend: 100% (14/14 tests passed on Node.js)
+- Frontend: 95% (minor automated test timing issue)
 
 ## Prioritized Backlog
-### P0 (Complete)
-- All core features implemented
-
-### P1 (Next Phase)
-- Neon Auth SDK integration (replace custom JWT auth)
+### P1
+- Neon Auth SDK integration (replace custom JWT)
+- Pusher/Ably for true WebSocket on Vercel
 - Dark mode toggle
+
+### P2
+- PDF export
 - Custom deck configuration
-- Vercel deployment configuration
-
-### P2 (Future)
-- PDF export (html2canvas/jsPDF)
-- Bulk CSV import with preview
-- Room settings (timer duration, deck type)
-- Reconnection resilience (resume session after disconnect)
-- Story reordering (drag and drop)
-
-## Next Tasks
-1. Switch to Neon Auth SDK when deploying to Vercel
-2. Add dark mode toggle
-3. Add custom deck support
-4. Create Vercel deployment config (vercel.json)
-5. Add Drizzle schema for migration management
+- Story drag-and-drop reordering
