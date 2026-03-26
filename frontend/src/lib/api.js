@@ -33,4 +33,7 @@ export const api = {
   submitVote: (storyId, data) => fetch(`${API}/stories/${storyId}/vote`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(handleResponse),
 
   getExportUrl: (hash) => `${API}/rooms/${hash}/export`,
+  getRooms: () => fetch(`${API}/rooms`, { headers: getHeaders() }).then(handleResponse),
+  deleteRoom: (hash) => fetch(`${API}/rooms/${hash}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
+
 };
