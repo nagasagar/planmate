@@ -1,0 +1,133 @@
+{
+  "theme": "Light",
+  "archetype": "4 (Swiss & High-Contrast - Productivity/SaaS Adaptation)",
+  "design_philosophy": "Functional clarity, high-contrast, structured and distraction-free split-pane layout to support Agile estimation.",
+  "typography": {
+    "headings": {
+      "family": "Manrope",
+      "style": "tracking-tight text-slate-900 font-semibold"
+    },
+    "body": {
+      "family": "IBM Plex Sans",
+      "style": "text-slate-600 leading-relaxed"
+    },
+    "monospace": {
+      "family": "JetBrains Mono",
+      "style": "tracking-tighter",
+      "usage": "Fibonacci numbers on cards, timers, data metrics"
+    },
+    "scale": {
+      "h1": "text-4xl sm:text-5xl lg:text-5xl font-bold",
+      "h2": "text-2xl sm:text-3xl font-semibold",
+      "h3": "text-xl sm:text-2xl font-medium",
+      "body": "text-base",
+      "small": "text-sm text-slate-500",
+      "micro": "text-xs tracking-[0.2em] uppercase text-slate-400"
+    }
+  },
+  "colors": {
+    "background": {
+      "primary": "bg-slate-50",
+      "surface": "bg-white",
+      "accent": "bg-slate-100",
+      "overlay": "bg-black/40 backdrop-blur-sm"
+    },
+    "text": {
+      "primary": "text-slate-900",
+      "secondary": "text-slate-600",
+      "tertiary": "text-slate-400"
+    },
+    "brand": {
+      "primary": "bg-blue-600",
+      "hover": "hover:bg-blue-700",
+      "active": "bg-blue-800",
+      "text_on_brand": "text-white"
+    },
+    "states": {
+      "success": "bg-emerald-500 text-white",
+      "warning": "bg-amber-500 text-white",
+      "error": "bg-rose-500 text-white",
+      "waiting": "bg-slate-200 border-slate-300"
+    },
+    "borders": {
+      "default": "border-slate-200",
+      "focus": "ring-2 ring-blue-500 ring-offset-2"
+    }
+  },
+  "spacing_and_layout": {
+    "philosophy": "Generous spacing. F-pattern priority. Containers with borders must have internal padding (p-6 or p-8).",
+    "global_layout": "Split pane architecture for the main room. Fixed full-height left sidebar (w-80) and flex-1 scrollable right area.",
+    "bento_grid": "Grid mode 'Control Room' for dashboards: Dense, data-correlated, tight gaps (gap-4/gap-6).",
+    "cards": "Subtle border, no drop shadow by default, hover lifts (-translate-y-1) and adds light shadow (shadow-md)."
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-blue-600 text-white hover:bg-blue-700 transition-colors px-6 py-2 rounded-md font-medium shadow-sm data-testid='{name}-button'",
+      "secondary": "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors px-6 py-2 rounded-md font-medium shadow-sm",
+      "ghost": "text-slate-600 hover:text-slate-900 hover:bg-slate-100 px-4 py-2 rounded-md transition-colors"
+    },
+    "fibonacci_card": {
+      "base": "w-20 h-28 sm:w-24 sm:h-36 rounded-xl border-2 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center bg-white shadow-sm hover:shadow-md",
+      "unselected": "border-slate-200 hover:border-blue-400 text-slate-700",
+      "selected": "border-blue-600 bg-blue-50 text-blue-700 -translate-y-2 shadow-lg",
+      "disabled": "opacity-50 cursor-not-allowed border-slate-200 bg-slate-50",
+      "back_pattern": "bg-blue-600 border-blue-600 opacity-80 bg-[radial-gradient(#ffffff33_1px,transparent_1px)] [background-size:16px_16px]"
+    },
+    "inputs": {
+      "default": "w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent data-testid='{name}-input'"
+    },
+    "table": {
+      "container": "w-full border-collapse bg-white rounded-lg border border-slate-200 overflow-hidden",
+      "header": "bg-slate-50 border-b border-slate-200 text-left text-xs font-medium text-slate-500 uppercase tracking-wider px-6 py-3",
+      "row": "border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors",
+      "cell": "px-6 py-4 whitespace-nowrap text-sm text-slate-700"
+    }
+  },
+  "motion": {
+    "card_flip": "Use framer-motion rotateY(180deg) for revealing cards. Add subtle scale/spring physics (type: 'spring', stiffness: 260, damping: 20).",
+    "presence": "Avatars should have a subtle pulsing ring (animate-pulse) when a user is actively voting.",
+    "transitions": "State changes (Ready -> Voting -> Completed) should crossfade content gracefully using framer-motion AnimatePresence."
+  },
+  "media": {
+    "images": [
+      {
+        "id": "landing_hero",
+        "url": "https://static.prod-images.emergentagent.com/jobs/67cef270-4ca2-43ae-bf32-22d25dcfd410/images/cd242e51586d588d795aada2e5ea30634df909e8caca9fd2e49598aad826df1e.png",
+        "category": "hero",
+        "description": "Minimalist professional 3D abstract composition for landing page hero section."
+      },
+      {
+        "id": "login_bg",
+        "url": "https://static.prod-images.emergentagent.com/jobs/67cef270-4ca2-43ae-bf32-22d25dcfd410/images/8f0d733646436dfc084dff4b82cca330bdaeebe222ad8d75ccf50bcc3469f889.png",
+        "category": "background",
+        "description": "Clean, bright, abstract professional pattern for a login page background."
+      },
+      {
+        "id": "company_logo",
+        "url": "https://images.unsplash.com/photo-1761624159387-5f9d883b4415?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MTN8MHwxfHNlYXJjaHwxfHxjb21wYW55JTIwbG9nbyUyMGljb24lMjBibHVlJTIwZ2VvbWV0cmljfGVufDB8fHx8MTc3NDUxMDQ2OXww&ixlib=rb-4.1.0&q=85",
+        "category": "logo",
+        "description": "Abstract blue metallic ring logo for the app."
+      }
+    ]
+  },
+  "accessibility_and_testing": {
+    "data_testid": "ALL interactive and key informational elements MUST include a data-testid attribute in kebab-case. Example: data-testid='room-create-button', data-testid='story-title-input'.",
+    "contrast": "Text over backgrounds must meet APCA/WCAG standards. Slate-600 on Slate-50 minimum.",
+    "focus": "All buttons, inputs, and clickable cards must have explicit focus states: focus:ring-2 focus:ring-blue-500."
+  },
+  "icons": {
+    "library": "lucide-react",
+    "instructions": "Use lucide-react for all standard icons (coffee, check, clock, users, settings, plus, bar-chart, etc). Ensure strokeWidth is 2."
+  },
+  "instructions_to_main_agent": [
+    "Build the UI primarily with pure Tailwind CSS and React for the unique split-pane layout.",
+    "Use Shadcn UI for standard forms, dialogs, dropdowns, and complex interactive bits.",
+    "Implement the split pane layout with Flexbox (w-80 left sidebar border-r, flex-1 right pane).",
+    "Ensure all state controls (Start, Reveal, Reset) are only visible/enabled based on PO role (simulate via state for MVP).",
+    "Fibonacci sequence to support: 1, 2, 3, 5, 8, 13, 21, ?, ∞, ☕. Render them cleanly.",
+    "Card animation must use framer-motion. Cards are face down (back pattern visible) until 'Reveal' is clicked, then they flip (rotateY 180).",
+    "MUST include 'data-testid' on ALL inputs, buttons, and cards for robust testing.",
+    "Use standard Tailwind font-mono (or IBM Plex Mono/JetBrains) for the numbers on the Fibonacci cards.",
+    "Data table for 'Vote Table' should be clean and clearly show average points calculated after reveal."
+  ]
+}
